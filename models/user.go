@@ -1,6 +1,10 @@
 package models
 
+import "time"
+
 type User struct {
-	ID            string `json:"user_id" gorm:"type:varchar(30);unique;primary_key"`
-	GoogleAccount string `json:"google_account" gorm:"not null"`
+	ID            string    `json:"user_id"`
+	GoogleAccount string    `json:"google_account"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
