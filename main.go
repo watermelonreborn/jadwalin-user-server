@@ -19,8 +19,7 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	services.InitializeDatabase()
-	services.InitializeFirebase()
+	services.ConnectDB()
 
 	s := &http.Server{
 		Addr:           fmt.Sprintf(":%d", config.AppConfig.Port),

@@ -17,6 +17,7 @@ type Config struct {
 	Environment string
 	Debug       bool
 
+	DBURL      string
 	DBHost     string
 	DBPort     int
 	DBDatabase string
@@ -65,6 +66,7 @@ func InitializeConfig() {
 		}
 	}
 
+	AppConfig.DBURL = viper.GetString("DATABASE_URL")
 	AppConfig.DBUsername = viper.GetString("DATABASE_USERNAME")
 	AppConfig.DBPassword = viper.GetString("DATABASE_PASSWORD")
 	AppConfig.DBHost = viper.GetString("DATABASE_HOST")
