@@ -24,6 +24,10 @@ type Config struct {
 	DBUsername string
 	DBPassword string
 	SSLMode    string
+
+	RedisHost     string
+	RedisPort     string
+	RedisPassword string
 }
 
 func InitializeConfig() {
@@ -72,6 +76,10 @@ func InitializeConfig() {
 	AppConfig.DBHost = viper.GetString("DATABASE_HOST")
 	AppConfig.DBPort = viper.GetInt("DATABASE_PORT")
 	AppConfig.DBDatabase = viper.GetString("DATABASE_DATABASE")
+
+	AppConfig.RedisHost = viper.GetString("REDIS_HOST")
+	AppConfig.RedisPort = viper.GetString("REDIS_PORT")
+	AppConfig.RedisPassword = viper.GetString("REDIS_PASSWORD")
 }
 
 // Example:

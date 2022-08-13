@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"boilerplate/constants"
-	"boilerplate/models"
+	"jadwalin/constants"
+	"jadwalin/models"
 )
 
 func AuthOnly(c *gin.Context) {

@@ -6,8 +6,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"boilerplate/config"
-	"boilerplate/models"
+	"jadwalin/config"
+	"jadwalin/models"
 )
 
 var Database *gorm.DB

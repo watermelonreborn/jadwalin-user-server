@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"boilerplate/models"
-	"boilerplate/services"
+	"jadwalin/models"
+	"jadwalin/services"
 )
 
 func GetAllExample(c *gin.Context) {

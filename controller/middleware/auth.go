@@ -1,21 +1,14 @@
 package middleware
 
 import (
-	"context"
-	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 
-	"boilerplate/constants"
-	"boilerplate/models"
-	"boilerplate/services"
+	"jadwalin/constants"
 )
 
-var requireVerify = false
-
 func AuthMiddleware(c *gin.Context) {
-	firebaseAuth := services.FirebaseAuth
 
 	authorizationToken := c.GetHeader("Authorization")
 	idToken := strings.TrimSpace(strings.Replace(authorizationToken, "Bearer", "", 1))
@@ -26,20 +19,10 @@ func AuthMiddleware(c *gin.Context) {
 		return
 	}
 
-	//verify token
-	token, err := firebaseAuth.VerifyIDToken(context.Background(), idToken)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, models.Response{Error: "invalid token"})
-		c.Abort()
-		return
-	}
+	// TODO: verify token
 
-	if requireVerify && !token.Claims["email_verified"].(bool) {
-		c.JSON(http.StatusBadRequest, models.Response{Error: "account not verified"})
-		c.Abort()
-		return
-	}
-
-	c.Set(constants.UserIDKey, token.UID)
+	// TODO: set user id key to user id
+	// c.Set(constants.UserIDKey, token.UID)
+	c.Set(constants.UserIDKey, "user_id")
 	c.Next()
 }

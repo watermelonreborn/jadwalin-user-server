@@ -7,9 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"boilerplate/config"
-	"boilerplate/router"
-	"boilerplate/services"
+	"jadwalin/config"
+	"jadwalin/router"
+	"jadwalin/services"
 )
 
 func main() {

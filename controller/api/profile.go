@@ -5,9 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"boilerplate/constants"
-	"boilerplate/models"
-	"boilerplate/services"
+	"jadwalin/constants"
+	"jadwalin/models"
+	"jadwalin/services"
 )
 
 const profileNotFoundMessage = "profile not found"

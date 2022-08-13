@@ -1,9 +1,9 @@
 package services
 
 import (
-	"boilerplate/config"
 	"context"
 	"fmt"
+	"jadwalin/config"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"

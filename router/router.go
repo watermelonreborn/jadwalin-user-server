@@ -3,9 +3,9 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 
-	"boilerplate/controller/api"
-	"boilerplate/controller/middleware"
-	"boilerplate/utils"
+	"jadwalin/controller/api"
+	"jadwalin/controller/middleware"
+	"jadwalin/utils"
 )
 
 func InitializeRouter() (router *gin.Engine) {
@@ -13,7 +13,7 @@ func InitializeRouter() (router *gin.Engine) {
 
 	apiRoute := router.Group("/api")
 	apiRoute.Use(
-		middleware.AuthMiddleware,
+		// middleware.AuthMiddleware,
 		middleware.CorsMiddleware,
 	)
 	{

@@ -9,3 +9,8 @@ docker run -d \
     -e POSTGRES_USER=$POSTGRES_ADMIN_USER \
     -e POSTGRES_PASSWORD=$POSTGRES_ADMIN_PASS \
     postgres
+
+docker run \
+    --name golang-redis \
+    -p 7001:6379 \
+    -d redis
