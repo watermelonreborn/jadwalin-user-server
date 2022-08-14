@@ -12,7 +12,7 @@ import (
 func CreateUser(c *gin.Context) {
 	// TODO: Write user to database
 
-	var request models.UserDiscordRequest
+	var request models.UserRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, models.Response{Error: err.Error()})
 		return
