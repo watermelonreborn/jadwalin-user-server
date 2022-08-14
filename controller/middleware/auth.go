@@ -19,9 +19,11 @@ func AuthMiddleware(c *gin.Context) {
 		return
 	}
 
+	c.Set(constants.IsAuthenticatedKey, true)
+
 	// TODO: verify token
 
-	// TODO: set user id key to user id
+	// TODO: replace "user_id" with actual user id
 	// c.Set(constants.UserIDKey, token.UID)
 	c.Set(constants.UserIDKey, "user_id")
 	c.Next()

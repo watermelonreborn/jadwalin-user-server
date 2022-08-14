@@ -13,10 +13,15 @@ func InitializeRouter() (router *gin.Engine) {
 
 	apiRoute := router.Group("/api")
 	apiRoute.Use(
-		// middleware.AuthMiddleware,
+		middleware.AuthMiddleware,
 		middleware.CorsMiddleware,
 	)
 	{
+		user := apiRoute.Group("/user")
+		{
+			user.GET("/code", api.GetCode)
+			user.POST("/code", api.PostCode)
+		}
 		profile := apiRoute.Group("/profile")
 		{
 			profile.GET("/get", utils.AuthOnly, api.GetMyProfile)
