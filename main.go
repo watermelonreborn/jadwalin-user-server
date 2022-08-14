@@ -20,6 +20,7 @@ func main() {
 	}
 
 	services.ConnectDB()
+	services.InitializeRedis()
 
 	s := &http.Server{
 		Addr:           fmt.Sprintf(":%d", config.AppConfig.Port),

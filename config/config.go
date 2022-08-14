@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net"
 	nurl "net/url"
-	"strconv"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -17,9 +16,8 @@ type Config struct {
 	Environment string
 	Debug       bool
 
-	DBURL      string
 	DBHost     string
-	DBPort     int
+	DBPort     string
 	DBDatabase string
 	DBUsername string
 	DBPassword string
@@ -52,29 +50,10 @@ func InitializeConfig() {
 	}
 
 	// Database environment
-	dbUrl := viper.GetString("DATABASE_URL")
-
-	if dbUrl != "" {
-		dbInfo, err := ParseURL(dbUrl)
-
-		if err == nil {
-			AppConfig.DBUsername = dbInfo[0]
-			AppConfig.DBPassword = dbInfo[1]
-			AppConfig.DBHost = dbInfo[2]
-			AppConfig.DBPort, err = strconv.Atoi(dbInfo[3])
-			AppConfig.DBDatabase = dbInfo[4]
-
-			if err == nil {
-				return
-			}
-		}
-	}
-
-	AppConfig.DBURL = viper.GetString("DATABASE_URL")
 	AppConfig.DBUsername = viper.GetString("DATABASE_USERNAME")
 	AppConfig.DBPassword = viper.GetString("DATABASE_PASSWORD")
 	AppConfig.DBHost = viper.GetString("DATABASE_HOST")
-	AppConfig.DBPort = viper.GetInt("DATABASE_PORT")
+	AppConfig.DBPort = viper.GetString("DATABASE_PORT")
 	AppConfig.DBDatabase = viper.GetString("DATABASE_DATABASE")
 
 	AppConfig.RedisHost = viper.GetString("REDIS_HOST")
