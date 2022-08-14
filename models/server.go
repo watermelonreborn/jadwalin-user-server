@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type Server struct {
 	ID        string    `json:"server_id" gorm:"primary_key"`

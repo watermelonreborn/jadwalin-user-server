@@ -5,7 +5,6 @@ import (
 
 	"jadwalin/controller/api"
 	"jadwalin/controller/middleware"
-	"jadwalin/utils"
 )
 
 func InitializeRouter() (router *gin.Engine) {
@@ -19,23 +18,15 @@ func InitializeRouter() (router *gin.Engine) {
 	{
 		user := apiRoute.Group("/user")
 		{
+			// userRoute.POST("", api.CreateUser)
+			// route to get user with user id string
+			// userRoute.GET("/:userId", api.GetUser)
 			user.GET("/code", api.GetCode)
 			user.POST("/code", api.PostCode)
 		}
-		profile := apiRoute.Group("/profile")
+		health := apiRoute.Group("/health")
 		{
-			profile.GET("/get", utils.AuthOnly, api.GetMyProfile)
-			profile.POST("/create", utils.AuthOnly, api.CreateProfile)
-			profile.PATCH("/update", utils.AuthOnly, api.UpdateProfile)
-			profile.DELETE("/delete", utils.AuthOnly, api.DeleteProfile)
-		}
-		example := apiRoute.Group("/example")
-		{
-			example.GET("/get", api.GetAllExample)
-			example.GET("/get/:id", api.GetExampleById)
-			example.POST("/create", api.CreateExample)
-			example.PATCH("/update/:id", api.UpdateExample)
-			example.DELETE("/delete/:id", api.DeleteExample)
+			health.GET("", api.HealthCheck)
 		}
 	}
 

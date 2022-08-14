@@ -1,14 +1,11 @@
-POSTGRES_ADMIN_DB="postgres"
-POSTGRES_ADMIN_USER="user"
-POSTGRES_ADMIN_PASS="password"
+MONGO_ADMIN_USER="admin"
+MONGO_ADMIN_PASS="bantengmerah"
 
 docker run -d \
-    --name golang-postgres \
-    -p 5432:5432 \
-    -e POSTGRES_DB=$POSTGRES_ADMIN_DB \
-    -e POSTGRES_USER=$POSTGRES_ADMIN_USER \
-    -e POSTGRES_PASSWORD=$POSTGRES_ADMIN_PASS \
-    postgres
+    -- name jadwalin-user-server \
+    --p 27017:27017 \
+    -e MONGO_USER=$MONGO_ADMIN_USER \
+    -e MONGO_PASS=$MONGO_ADMIN_PASS \
 
 docker run \
     --name golang-redis \

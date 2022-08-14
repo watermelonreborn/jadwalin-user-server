@@ -2,13 +2,15 @@ package services
 
 import (
 	"context"
-	"fmt"
 	"jadwalin/config"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+var MongoClient *mongo.Client
 
 func CloseDB(client *mongo.Client, ctx context.Context, cancel context.CancelFunc) {
 
@@ -25,13 +27,34 @@ func CloseDB(client *mongo.Client, ctx context.Context, cancel context.CancelFun
 
 func ConnectDB() (*mongo.Client, context.Context, context.CancelFunc, error) {
 
-	fmt.Println("[INFO] Connecting to MongoDB")
+	log.Println("[INFO] Connecting to MongoDB")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config.AppConfig.DBURL))
+	dbUri := config.AppConfig.DBHost + ":" + config.AppConfig.DBPort + "/"
 
-	fmt.Println("[INFO] Connected to MongoDB")
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dbUri), options.Client().SetAuth(options.Credential{
+		Username: config.AppConfig.DBUsername,
+		Password: config.AppConfig.DBPassword,
+	}))
+
+	MongoClient = client
+
+	MongoClient.Ping(context.TODO(), nil)
+
+	log.Println("[INFO] Connected to MongoDB")
 
 	return client, ctx, cancel, err
+}
+
+func MongoHealthCheck() (string, string) {
+
+	log.Println("[INFO] MongoDB checking...")
+	err := MongoClient.Ping(context.TODO(), nil)
+
+	if err != nil {
+		return "[ERROR]", "MongoDB is not available!"
+	}
+
+	return "[INFO]", "MongoDB is connected!"
 }

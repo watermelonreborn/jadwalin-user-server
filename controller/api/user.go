@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -20,15 +19,10 @@ func GetCode(c *gin.Context) {
 		return
 	}
 
-	rdb := services.RedisClient
-
 	uuid := c.GetString(constants.UserIDKey)
-	code := "example"
+	code, err := services.CreateCode(uuid)
 
-	// TODO: Check of code already exists in redis
-
-	res := rdb.Set(context.Background(), code, uuid, constants.CodeExpirationDuration)
-	if res.Err() != nil {
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.Response{
 			Error: "Internal server error: Failed to generate new code",
 		})
@@ -39,16 +33,15 @@ func GetCode(c *gin.Context) {
 }
 
 func PostCode(c *gin.Context) {
-	rdb := services.RedisClient
-
 	var input models.UserRegister
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, models.Response{Error: err.Error()})
 		return
 	}
 
-	res := rdb.Get(context.Background(), input.Code)
-	if res.Err() != nil {
+	res, err := services.UseCode(input.Code)
+
+	if err != nil {
 		c.JSON(http.StatusNotFound, models.Response{
 			Error: "Internal server error: Code has expired or is invalid",
 		})
@@ -58,5 +51,28 @@ func PostCode(c *gin.Context) {
 	// TODO: Register user to server
 	fmt.Println(input)
 
-	c.JSON(http.StatusOK, models.Response{Data: res.Val()})
+	c.JSON(http.StatusOK, models.Response{Data: res})
+}
+
+// func CreateUser(c *gin.Context) {
+// 	// TODO: Write user to database
+
+// 	var request models.UserRequest
+// 	if err := c.ShouldBindJSON(&request); err != nil {
+// 		c.JSON(http.StatusBadRequest, models.Response{Error: err.Error()})
+// 		return
+// 	}
+// 	services.CreateUser(request)
+
+// 	c.JSON(http.StatusOK, models.Response{Code: 200, Data: "OK"})
+// }
+
+func GetUser(c *gin.Context) {
+	// TODO: Get user from database
+	c.JSON(http.StatusOK, models.Response{Code: 200, Data: "OK"})
+}
+
+func DeleteUser(c *gin.Context) {
+	// TODO: Delete user from database
+	c.JSON(http.StatusOK, models.Response{Code: 200, Data: "OK"})
 }
