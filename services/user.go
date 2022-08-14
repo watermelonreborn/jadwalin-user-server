@@ -5,9 +5,9 @@ import (
 	"jadwalin/models"
 )
 
-func CreateUser(userRequest models.UserDiscordRequest) {
+func CreateUser(userRegister models.UserRegister) {
 	// TODO: create logic to write user to database and save user's server
-	fmt.Println(userRequest)
+	fmt.Println(userRegister)
 }
 
 func GetUser(userId string) {
