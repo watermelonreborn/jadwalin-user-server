@@ -8,7 +8,6 @@ env:
   PROJECT_ID: jadwal-in
   SERVICE: jadwalin-user-server
   REGION: us-central1
-  SERVER_PORT: 8080
   SERVER_ENV: dev
   SERVER_DEBUG: true
 
@@ -39,4 +38,4 @@ jobs:
           service: '${{ env.SERVICE }}'
           image: 'gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}'
           region: '${{ env.REGION }}'
-          env_vars: 'PORT=${{ env.SERVER_PORT }},ENVIRONMENT=${{ env.SERVER_ENV }},DEBUG=${{ env.SERVER_DEBUG }},DATABASE_USERNAME=${{ secrets.DB_USERNAME }},DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }},DATABASE_HOST=${{ secrets.DB_HOST }},DATABASE_PORT=${{ secrets.DB_PORT }}'
+          env_vars: 'ENVIRONMENT=${{ env.SERVER_ENV }},DEBUG=${{ env.SERVER_DEBUG }},DATABASE_USERNAME=${{ secrets.DB_USERNAME }},DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }},DATABASE_HOST=${{ secrets.DB_HOST }},DATABASE_PORT=${{ secrets.DB_PORT }}'
