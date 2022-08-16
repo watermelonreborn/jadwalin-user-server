@@ -28,6 +28,8 @@ func CloseDB(client *mongo.Client, ctx context.Context, cancel context.CancelFun
 func ConnectDB() (*mongo.Client, context.Context, context.CancelFunc, error) {
 
 	log.Println("[INFO] Connecting to MongoDB")
+	log.Println(config.AppConfig.DBHost)
+	log.Println(config.AppConfig.DBPort)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 
