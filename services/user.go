@@ -5,7 +5,7 @@ import (
 	"jadwalin/models"
 )
 
-func CreateUser(userRegister models.UserRegister) {
+func CreateUser(userRegister models.UserRegister) (string, error) {
 	// TODO: create logic to write user to database and save user's server
 	fmt.Println(userRegister)
 }
