@@ -25,28 +25,42 @@ func CloseDB(client *mongo.Client, ctx context.Context, cancel context.CancelFun
 	}()
 }
 
-func ConnectDB() (*mongo.Client, context.Context, context.CancelFunc, error) {
-
+func ConnectDB() (*mongo.Client, error) {
 	log.Println("[INFO] Connecting to MongoDB")
-	log.Println(config.AppConfig.DBHost)
-	log.Println(config.AppConfig.DBPort)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-
-	dbUri := config.AppConfig.DBHost + ":" + config.AppConfig.DBPort + "/"
-
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dbUri), options.Client().SetAuth(options.Credential{
+	credential := options.Credential{
 		Username: config.AppConfig.DBUsername,
 		Password: config.AppConfig.DBPassword,
-	}))
+	}
 
-	MongoClient = client
+	dbUri := config.AppConfig.DBHost + ":" + config.AppConfig.DBPort + "/"
+	clientOptions := options.Client()
+	clientOptions.ApplyURI(dbUri)
 
-	MongoClient.Ping(context.TODO(), nil)
+	if credential.Username != "" && credential.Password != "" {
+		clientOptions.SetAuth(credential)
+	}
+
+	client, err := mongo.NewClient(clientOptions)
+	if err != nil {
+		log.Printf("[ERROR] Error creating new mongo client: %s", err)
+		return nil, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Printf("[ERROR] Error connectign to mongo client: %s", err)
+		return nil, err
+	}
+
+	client.Ping(context.TODO(), nil)
 
 	log.Println("[INFO] Connected to MongoDB")
 
-	return client, ctx, cancel, err
+	return client, nil
 }
 
 func MongoHealthCheck() (string, string) {
