@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -39,7 +38,7 @@ func PostCode(c *gin.Context) {
 		return
 	}
 
-	res, err := services.UseCode(input.Code)
+	userId, err := services.UseCode(input.Code)
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, models.Response{
@@ -49,9 +48,8 @@ func PostCode(c *gin.Context) {
 	}
 
 	// TODO: Register user to server
-	fmt.Println(input)
 
-	c.JSON(http.StatusOK, models.Response{Data: res})
+	c.JSON(http.StatusOK, models.Response{Data: userId})
 }
 
 func GetUser(c *gin.Context) {
