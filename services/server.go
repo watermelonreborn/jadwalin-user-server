@@ -2,8 +2,9 @@ package services
 
 import (
 	"context"
-	"fmt"
+	"jadwalin/constants"
 	"jadwalin/models"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,19 +12,10 @@ import (
 )
 
 func CreateServer(uid interface{}, user models.User) (string, error) {
-
+	log.Printf("%s CreateServer: %s, %s", constants.LogInfo, user.DiscordID, user.ServerID)
 	db := MongoClient.Database("jadwalin").Collection("servers")
 
-	var foundServer models.Server
-
-	err := db.FindOne(context.TODO(), bson.D{primitive.E{Key: "_id", Value: user.ServerID}}).Decode(&foundServer)
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	members := foundServer.Members
-
+	members := make(map[string]interface{})
 	members[user.DiscordID] = uid
 	server := models.Server{
 		ID:        user.ServerID,
@@ -31,9 +23,14 @@ func CreateServer(uid interface{}, user models.User) (string, error) {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
-	_, err = db.UpdateOne(context.TODO(), server.ID, server)
 
-	return "success", err
+	_, err := db.InsertOne(context.TODO(), server)
+	if err != nil {
+		log.Printf("%s %s: %s", constants.LogError, err, user.ServerID)
+		return constants.Error, err
+	}
+
+	return constants.Success, err
 }
 
 func GetServer(serverId string) models.Server {
@@ -43,13 +40,23 @@ func GetServer(serverId string) models.Server {
 	filter := bson.D{primitive.E{Key: "_id", Value: serverId}}
 	err := db.FindOne(context.TODO(), filter).Decode(&result)
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("%s %s: %s", constants.LogError, err, serverId)
 	}
-	fmt.Println(result)
 
 	return result
 }
 
-func UpdateServer(serverId string, server models.Server) {
-	// TODO: Update server
+func UpdateServer(serverId string, serverMembers map[string]interface{}) (string, error) {
+	log.Printf("%s UpdateServer: %s", constants.LogInfo, serverId)
+	db := MongoClient.Database("jadwalin").Collection("servers")
+
+	filter := bson.D{primitive.E{Key: "_id", Value: serverId}}
+	update := bson.D{primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "members", Value: serverMembers}}}}
+	_, err := db.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		log.Printf("%s %s: %s", constants.LogError, err, serverId)
+		return constants.Error, err
+	}
+
+	return constants.Success, err
 }

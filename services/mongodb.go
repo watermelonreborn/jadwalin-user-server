@@ -52,9 +52,11 @@ func ConnectDB() (*mongo.Client, error) {
 
 	err = client.Connect(ctx)
 	if err != nil {
-		log.Printf("[ERROR] Error connectign to mongo client: %s", err)
+		log.Printf("[ERROR] Error connecting to mongo client: %s", err)
 		return nil, err
 	}
+
+	MongoClient = client
 
 	client.Ping(context.TODO(), nil)
 

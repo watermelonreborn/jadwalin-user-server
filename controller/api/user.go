@@ -1,7 +1,7 @@
 package api
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -48,8 +48,13 @@ func PostCode(c *gin.Context) {
 		return
 	}
 
-	// TODO: Register user to server
-	fmt.Println(input)
+	res, user := services.CreateUser(input)
+
+	if res == constants.AlreadyRegistered {
+		log.Printf("[ERROR] user already registered: %s", input)
+		c.JSON(http.StatusBadRequest, models.Response{Error: constants.AlreadyRegistered + ": user already registered", Data: user})
+		return
+	}
 
 	c.JSON(http.StatusOK, models.Response{Data: res})
 }
