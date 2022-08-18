@@ -66,12 +66,11 @@ func ConnectDB() (*mongo.Client, error) {
 }
 
 func MongoHealthCheck() (string, string) {
-
 	log.Println("[INFO] MongoDB checking...")
-	err := MongoClient.Ping(context.TODO(), nil)
 
+	err := MongoClient.Ping(context.TODO(), nil)
 	if err != nil {
-		return "[ERROR]", "MongoDB is not available!"
+		return "[ERROR]", err.Error()
 	}
 
 	return "[INFO]", "MongoDB is connected!"

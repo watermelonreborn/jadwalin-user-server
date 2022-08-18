@@ -15,11 +15,13 @@ func HealthCheck(c *gin.Context) {
 	log.Println("[INFO] Health checking...")
 
 	// MongoDB check
-	status, message := services.MongoHealthCheck()
-	log.Println(status, message)
+	mongoStatus, mongoMessage := services.MongoHealthCheck()
+	log.Println(mongoStatus, mongoMessage)
 
 	// TODO: Check redis
+	redisStatus, RedisMessage := services.RedisHealthCheck()
+	log.Println(redisStatus, RedisMessage)
 
-	data := models.Health{MongoDB: message, Redis: "Redis not presence!"}
+	data := models.Health{MongoDB: mongoMessage, Redis: RedisMessage}
 	c.JSON(http.StatusOK, models.Response{Code: 200, Data: data})
 }
