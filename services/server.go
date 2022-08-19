@@ -34,6 +34,7 @@ func CreateServer(uid interface{}, user models.User) (string, error) {
 }
 
 func GetServer(serverId string) models.Server {
+	log.Printf("%s GetServer: %s", constants.LogInfo, serverId)
 	db := MongoClient.Database("jadwalin").Collection("servers")
 
 	var result models.Server
