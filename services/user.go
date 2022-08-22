@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func CreateUser(userRegister models.UserRegister) (string, models.User) {
+func CreateUser(userRegister models.UserRegister, authId string) (string, models.User) {
 	log.Printf("%s CreateUser: %s, %s", constants.LogInfo, userRegister.DiscordID, userRegister.ServerID)
 	userDb := MongoClient.Database("jadwalin").Collection("users")
 
@@ -22,7 +22,7 @@ func CreateUser(userRegister models.UserRegister) (string, models.User) {
 		return constants.AlreadyRegistered, user
 	}
 
-	newUser := converter.UserRegisterToUser(userRegister)
+	newUser := converter.UserRegisterToUser(userRegister, authId)
 	res, err := userDb.InsertOne(context.TODO(), newUser)
 	if err != nil {
 		log.Printf("%s %s: %s", constants.LogError, err, userRegister.DiscordID)
@@ -54,6 +54,20 @@ func GetUserByDiscordIDAndServerID(discordID string, serverID string) models.Use
 	err := db.FindOne(context.TODO(), filter).Decode(&result)
 	if err != nil {
 		log.Printf("%s %s: %s, %s", constants.LogError, err, discordID, serverID)
+	}
+
+	return result
+}
+
+func GetUserByAuthID(authID string) models.User {
+	log.Printf("%s GetUserByAuthID: %s", constants.LogInfo, authID)
+	db := MongoClient.Database("jadwalin").Collection("users")
+
+	var result models.User
+	filter := bson.D{primitive.E{Key: "auth_id", Value: authID}}
+	err := db.FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+		log.Printf("%s %s: %s", constants.LogError, err, authID)
 	}
 
 	return result
