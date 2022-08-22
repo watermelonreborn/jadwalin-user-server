@@ -18,9 +18,6 @@ func InitializeRouter() (router *gin.Engine) {
 	{
 		user := apiRoute.Group("/user")
 		{
-			// userRoute.POST("", api.CreateUser)
-			// route to get user with user id string
-			// userRoute.GET("/:userId", api.GetUser)
 			user.GET("/code", api.GetCode)
 			user.POST("/code", api.PostCode)
 		}

@@ -39,7 +39,7 @@ func PostCode(c *gin.Context) {
 		return
 	}
 
-	res, err := services.UseCode(input.Code)
+	userId, err := services.UseCode(input.Code)
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, models.Response{
@@ -48,7 +48,7 @@ func PostCode(c *gin.Context) {
 		return
 	}
 
-	res, user := services.CreateUser(input)
+	res, user := services.CreateUser(input, userId)
 
 	if res == constants.AlreadyRegistered {
 		log.Printf("[ERROR] user already registered: %s", input)
@@ -56,7 +56,7 @@ func PostCode(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, models.Response{Data: res})
+	c.JSON(http.StatusOK, models.Response{Data: userId})
 }
 
 func GetUser(c *gin.Context) {

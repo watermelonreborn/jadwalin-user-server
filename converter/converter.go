@@ -5,10 +5,11 @@ import (
 	"time"
 )
 
-func UserRegisterToUser(userRegister models.UserRegister) models.User {
+func UserRegisterToUser(userRegister models.UserRegister, authId string) models.User {
 	return models.User{
 		DiscordID: userRegister.DiscordID,
 		ServerID:  userRegister.ServerID,
+		AuthID:    authId,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
