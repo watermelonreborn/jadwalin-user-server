@@ -26,3 +26,8 @@ type UserResponse struct {
 	ServerID           string `json:"server_id"`
 	RegistrationStatus string `json:"registration_status"`
 }
+
+type UserSearch struct {
+	DiscordID string `json:"discord_id" binding:"required"`
+	ServerID  string `json:"server_id" binding:"required"`
+}

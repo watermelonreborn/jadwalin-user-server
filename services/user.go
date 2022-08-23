@@ -16,7 +16,7 @@ func CreateUser(userRegister models.UserRegister, authId string) (string, models
 	log.Printf("%s CreateUser: %s, %s", constants.LogInfo, userRegister.DiscordID, userRegister.ServerID)
 	userDb := MongoClient.Database("jadwalin").Collection("users")
 
-	user := GetUserByDiscordIDAndServerID(userRegister.DiscordID, userRegister.ServerID)
+	user, _ := GetUserByDiscordIDAndServerID(userRegister.DiscordID, userRegister.ServerID)
 	if user.DiscordID != "" {
 		log.Printf("%s User already registered: %s, %s", constants.LogError, userRegister.DiscordID, userRegister.ServerID)
 		return constants.AlreadyRegistered, user
@@ -45,7 +45,7 @@ func GetUser(userId string) {
 	fmt.Println(userId)
 }
 
-func GetUserByDiscordIDAndServerID(discordID string, serverID string) models.User {
+func GetUserByDiscordIDAndServerID(discordID string, serverID string) (models.User, error) {
 	log.Printf("%s GetUserByDiscordIDAndServerID: %s, %s", constants.LogInfo, discordID, serverID)
 	db := MongoClient.Database("jadwalin").Collection("users")
 
@@ -56,10 +56,10 @@ func GetUserByDiscordIDAndServerID(discordID string, serverID string) models.Use
 		log.Printf("%s %s: %s, %s", constants.LogError, err, discordID, serverID)
 	}
 
-	return result
+	return result, err
 }
 
-func GetUserByAuthID(authID string) models.User {
+func GetUserByAuthID(authID string) (models.User, error) {
 	log.Printf("%s GetUserByAuthID: %s", constants.LogInfo, authID)
 	db := MongoClient.Database("jadwalin").Collection("users")
 
@@ -70,7 +70,7 @@ func GetUserByAuthID(authID string) models.User {
 		log.Printf("%s %s: %s", constants.LogError, err, authID)
 	}
 
-	return result
+	return result, err
 }
 
 func DeleteUser(userId string) {
