@@ -31,3 +31,9 @@ type UserSearch struct {
 	DiscordID string `json:"discord_id" binding:"required"`
 	ServerID  string `json:"server_id" binding:"required"`
 }
+
+type UserSummary struct {
+	DiscordID string `json:"discord_id" binding:"required"`
+	ServerID  string `json:"server_id" binding:"required"`
+	Days      int    `json:"int" binding:"required"`
+}
