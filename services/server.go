@@ -11,8 +11,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func CreateServer(uid interface{}, user models.User) (string, error) {
-	log.Printf("%s CreateServer: %s, %s", constants.LogInfo, user.DiscordID, user.ServerID)
+func CreateServerWithUser(uid interface{}, user models.User) (string, error) {
+	log.Printf("%s CreateServerWithUser: %s, %s", constants.LogInfo, user.DiscordID, user.ServerID)
 	db := MongoClient.Database("jadwalin").Collection("servers")
 
 	members := make(map[string]interface{})
@@ -27,6 +27,28 @@ func CreateServer(uid interface{}, user models.User) (string, error) {
 	_, err := db.InsertOne(context.TODO(), server)
 	if err != nil {
 		log.Printf("%s %s: %s", constants.LogError, err, user.ServerID)
+		return constants.Error, err
+	}
+
+	return constants.Success, err
+}
+
+func CreateServer(serverId string, textChannel string) (string, error) {
+	log.Printf("%s CreateServer: %s", constants.LogInfo, serverId)
+	db := MongoClient.Database("jadwalin").Collection("servers")
+
+	members := make(map[string]interface{})
+	server := models.Server{
+		ID:          serverId,
+		TextChannel: textChannel,
+		Members:     members,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	_, err := db.InsertOne(context.TODO(), server)
+	if err != nil {
+		log.Printf("%s %s: %s", constants.LogError, err, serverId)
 		return constants.Error, err
 	}
 
@@ -52,6 +74,21 @@ func UpdateServer(serverId string, serverMembers map[string]interface{}) (string
 
 	filter := bson.D{primitive.E{Key: "_id", Value: serverId}}
 	update := bson.D{primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "members", Value: serverMembers}}}}
+	_, err := db.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		log.Printf("%s %s: %s", constants.LogError, err, serverId)
+		return constants.Error, err
+	}
+
+	return constants.Success, err
+}
+
+func UpdateTextChannel(serverId string, textChannel string) (string, error) {
+	log.Printf("%s UpdateTextChannel: %s", constants.LogInfo, serverId)
+	db := MongoClient.Database("jadwalin").Collection("servers")
+
+	filter := bson.D{primitive.E{Key: "_id", Value: serverId}}
+	update := bson.D{primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "text_channel", Value: textChannel}}}}
 	_, err := db.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		log.Printf("%s %s: %s", constants.LogError, err, serverId)

@@ -26,6 +26,12 @@ func InitializeRouter() (router *gin.Engine) {
 		{
 			health.GET("", api.HealthCheck)
 		}
+		server := apiRoute.Group("/server")
+		{
+			server.GET("/:serverid", api.GetServer)
+			server.POST("/create", api.CreateServer)
+			server.POST("/update", api.UpdateServer)
+		}
 	}
 
 	return router

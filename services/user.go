@@ -31,7 +31,7 @@ func CreateUser(userRegister models.UserRegister, authId string) (string, models
 
 	server := GetServer(userRegister.ServerID)
 	if server.ID == "" {
-		CreateServer(res.InsertedID, newUser)
+		CreateServerWithUser(res.InsertedID, newUser)
 	} else {
 		server.Members[userRegister.DiscordID] = res.InsertedID
 		UpdateServer(userRegister.ServerID, server.Members)
