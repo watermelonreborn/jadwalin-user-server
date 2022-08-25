@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -33,8 +34,9 @@ func main() {
 
 	scheduler := gocron.NewScheduler(time.UTC)
 	scheduler.Every(15).Minutes().Do(func() {
-		fmt.Println("Scheduler started")
+		log.Println("Scheduler started")
 		services.GetEventsInHour(1)
+		log.Println("Scheduler finished")
 	})
 	scheduler.StartAsync()
 
