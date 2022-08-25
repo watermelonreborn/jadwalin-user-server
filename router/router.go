@@ -20,10 +20,17 @@ func InitializeRouter() (router *gin.Engine) {
 		{
 			user.GET("/code", api.GetCode)
 			user.POST("/code", api.PostCode)
+			user.POST("/sync", api.SyncCalendar)
 		}
 		health := apiRoute.Group("/health")
 		{
 			health.GET("", api.HealthCheck)
+		}
+		server := apiRoute.Group("/server")
+		{
+			server.GET("/:serverid", api.GetServer)
+			server.POST("/create", api.CreateServer)
+			server.POST("/update", api.UpdateServer)
 		}
 	}
 

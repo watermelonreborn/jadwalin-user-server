@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -43,7 +44,7 @@ func PostCode(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, models.Response{
-			Error: "Internal server error: Code has expired or is invalid",
+			Error: "Not found: Code has expired or is invalid",
 		})
 		return
 	}
@@ -67,4 +68,94 @@ func GetUser(c *gin.Context) {
 func DeleteUser(c *gin.Context) {
 	// TODO: Delete user from database
 	c.JSON(http.StatusOK, models.Response{Code: 200, Data: "OK"})
+}
+
+func SyncCalendar(c *gin.Context) {
+	var input models.UserSearch
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, models.Response{Error: err.Error()})
+		return
+	}
+
+	user, err := services.GetUserByDiscordIDAndServerID(input.DiscordID, input.ServerID)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, models.Response{
+			Error: "Not found: User is not registered",
+		})
+		return
+	}
+
+	res, err := services.SyncCalendar(user.AuthID)
+
+	if res.StatusCode != 200 || err != nil {
+		c.JSON(http.StatusInternalServerError, models.Response{
+			Error: "Internal server error: An unexpected error occured",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.Response{Code: 200, Data: "OK"})
+}
+
+func GetEvents(c *gin.Context) {
+	var input models.UserSearch
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, models.Response{Error: err.Error()})
+		return
+	}
+
+	user, err := services.GetUserByDiscordIDAndServerID(input.DiscordID, input.ServerID)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, models.Response{
+			Error: "Not found: User is not registered",
+		})
+		return
+	}
+
+	res, err := services.GetEvents(user.AuthID)
+
+	if res.StatusCode != 200 || err != nil {
+		c.JSON(http.StatusInternalServerError, models.Response{
+			Error: "Internal server error: An unexpected error occured",
+		})
+		return
+	}
+
+	defer res.Body.Close()
+	result := models.Response{}
+	json.NewDecoder(res.Body).Decode(&result)
+	c.JSON(http.StatusOK, result)
+}
+
+func GetSummary(c *gin.Context) {
+	var input models.UserSummary
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, models.Response{Error: err.Error()})
+		return
+	}
+
+	user, err := services.GetUserByDiscordIDAndServerID(input.DiscordID, input.ServerID)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, models.Response{
+			Error: "Not found: User is not registered",
+		})
+		return
+	}
+
+	res, err := services.GetSummary(user.AuthID, input.Days)
+
+	if res.StatusCode != 200 || err != nil {
+		c.JSON(http.StatusInternalServerError, models.Response{
+			Error: "Internal server error: An unexpected error occured",
+		})
+		return
+	}
+
+	defer res.Body.Close()
+	result := models.Response{}
+	json.NewDecoder(res.Body).Decode(&result)
+	c.JSON(http.StatusOK, result)
 }
