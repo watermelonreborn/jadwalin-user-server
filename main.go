@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-co-op/gocron"
 
 	"jadwalin/config"
 	"jadwalin/router"
@@ -29,6 +30,13 @@ func main() {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
+
+	scheduler := gocron.NewScheduler(time.UTC)
+	scheduler.Every(15).Minutes().Do(func() {
+		fmt.Println("Scheduler started")
+		services.GetEventsInHour(1)
+	})
+	scheduler.StartAsync()
 
 	if err := s.ListenAndServe(); err != nil {
 		panic("[ERROR] Failed to listen and serve")
