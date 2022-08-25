@@ -26,6 +26,9 @@ type Config struct {
 	RedisHost     string
 	RedisPort     string
 	RedisPassword string
+
+	AuthURL string
+	BotURL  string
 }
 
 func InitializeConfig() {
@@ -59,6 +62,9 @@ func InitializeConfig() {
 	AppConfig.RedisHost = viper.GetString("REDIS_HOST")
 	AppConfig.RedisPort = viper.GetString("REDIS_PORT")
 	AppConfig.RedisPassword = viper.GetString("REDIS_PASSWORD")
+
+	AppConfig.AuthURL = viper.GetString("AUTH_URL")
+	AppConfig.BotURL = viper.GetString("BOT_URL")
 }
 
 // Example:

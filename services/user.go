@@ -12,17 +12,17 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func CreateUser(userRegister models.UserRegister) (string, models.User) {
+func CreateUser(userRegister models.UserRegister, authId string) (string, models.User) {
 	log.Printf("%s CreateUser: %s, %s", constants.LogInfo, userRegister.DiscordID, userRegister.ServerID)
 	userDb := MongoClient.Database("jadwalin").Collection("users")
 
-	status, user := GetUserByDiscordIDAndServerID(userRegister.DiscordID, userRegister.ServerID)
-	if user.DiscordID != "" || status == constants.Error {
+	user, _ := GetUserByDiscordIDAndServerID(userRegister.DiscordID, userRegister.ServerID)
+	if user.DiscordID != "" {
 		log.Printf("%s User already registered: %s, %s", constants.LogError, userRegister.DiscordID, userRegister.ServerID)
 		return constants.AlreadyRegistered, user
 	}
 
-	newUser := converter.UserRegisterToUser(userRegister)
+	newUser := converter.UserRegisterToUser(userRegister, authId)
 	res, err := userDb.InsertOne(context.TODO(), newUser)
 	if err != nil {
 		log.Printf("%s %s: %s", constants.LogError, err, userRegister.DiscordID)
@@ -31,7 +31,7 @@ func CreateUser(userRegister models.UserRegister) (string, models.User) {
 
 	server := GetServer(userRegister.ServerID)
 	if server.ID == "" {
-		CreateServer(res.InsertedID, newUser)
+		CreateServerWithUser(res.InsertedID, newUser)
 	} else {
 		server.Members[userRegister.DiscordID] = res.InsertedID
 		UpdateServer(userRegister.ServerID, server.Members)
@@ -45,7 +45,7 @@ func GetUser(userId string) {
 	fmt.Println(userId)
 }
 
-func GetUserByDiscordIDAndServerID(discordID string, serverID string) (string, models.User) {
+func GetUserByDiscordIDAndServerID(discordID string, serverID string) (models.User, error) {
 	log.Printf("%s GetUserByDiscordIDAndServerID: %s, %s", constants.LogInfo, discordID, serverID)
 	db := MongoClient.Database("jadwalin").Collection("users")
 
@@ -56,8 +56,21 @@ func GetUserByDiscordIDAndServerID(discordID string, serverID string) (string, m
 		log.Printf("%s %s: %s, %s", constants.LogError, err, discordID, serverID)
 		return constants.Error, result
 	}
+	return result, err
+}
 
-	return constants.Success, result
+func GetUserByAuthID(authID string) (models.User, error) {
+	log.Printf("%s GetUserByAuthID: %s", constants.LogInfo, authID)
+	db := MongoClient.Database("jadwalin").Collection("users")
+
+	var result models.User
+	filter := bson.D{primitive.E{Key: "auth_id", Value: authID}}
+	err := db.FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+		log.Printf("%s %s: %s", constants.LogError, err, authID)
+	}
+
+	return result, err
 }
 
 func DeleteUser(userId string) string {

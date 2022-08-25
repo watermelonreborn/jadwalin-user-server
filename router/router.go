@@ -9,24 +9,28 @@ import (
 
 func InitializeRouter() (router *gin.Engine) {
 	router = gin.Default()
-
-	apiRoute := router.Group("/api")
-	apiRoute.Use(
+	router.Use(
 		middleware.AuthMiddleware,
 		middleware.CorsMiddleware,
 	)
+
+	apiRoute := router.Group("/api")
 	{
 		user := apiRoute.Group("/user")
 		{
-			// userRoute.POST("", api.CreateUser)
-			// route to get user with user id string
-			// userRoute.GET("/:userId", api.GetUser)
 			user.GET("/code", api.GetCode)
 			user.POST("/code", api.PostCode)
+			user.POST("/sync", api.SyncCalendar)
 		}
 		health := apiRoute.Group("/health")
 		{
 			health.GET("", api.HealthCheck)
+		}
+		server := apiRoute.Group("/server")
+		{
+			server.GET("/:serverid", api.GetServer)
+			server.POST("/create", api.CreateServer)
+			server.POST("/update", api.UpdateServer)
 		}
 	}
 
