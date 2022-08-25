@@ -2,6 +2,7 @@ package services
 
 import (
 	"jadwalin/config"
+	"jadwalin/models"
 	"net/http"
 )
 
@@ -22,5 +23,10 @@ func GetEvents(authId string) (*http.Response, error) {
 
 // TODO: Implement
 func GetSummary(authId string, days int) (*http.Response, error) {
+	return nil, nil
+}
+
+// TODO: Implement
+func SendReminder(reminders []models.ReminderOutput) (*http.Response, error) {
 	return nil, nil
 }
