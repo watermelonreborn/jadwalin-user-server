@@ -9,12 +9,12 @@ import (
 
 func InitializeRouter() (router *gin.Engine) {
 	router = gin.Default()
-
-	apiRoute := router.Group("/api")
-	apiRoute.Use(
+	router.Use(
 		middleware.AuthMiddleware,
 		middleware.CorsMiddleware,
 	)
+
+	apiRoute := router.Group("/api")
 	{
 		user := apiRoute.Group("/user")
 		{

@@ -13,7 +13,6 @@ import (
 )
 
 func AuthMiddleware(c *gin.Context) {
-
 	authorizationToken := c.GetHeader("Authorization")
 	idToken := strings.TrimSpace(strings.Replace(authorizationToken, "Bearer", "", 1))
 
