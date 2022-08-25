@@ -54,8 +54,8 @@ func GetUserByDiscordIDAndServerID(discordID string, serverID string) (models.Us
 	err := db.FindOne(context.TODO(), filter).Decode(&result)
 	if err != nil {
 		log.Printf("%s %s: %s, %s", constants.LogError, err, discordID, serverID)
+		return constants.Error, result
 	}
-
 	return result, err
 }
 
@@ -73,7 +73,15 @@ func GetUserByAuthID(authID string) (models.User, error) {
 	return result, err
 }
 
-func DeleteUser(userId string) {
-	// TODO: create logic to delete user from database
-	fmt.Println(userId)
+func DeleteUser(userId string) string {
+	log.Printf("%s DeleteUser: %s", constants.LogInfo, userId)
+	db := MongoClient.Database("jadwalin").Collection("users")
+
+	filter := bson.D{primitive.E{Key: "_id", Value: userId}}
+	_, err := db.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		log.Printf("%s %s: %s", constants.LogError, err, userId)
+	}
+
+	return constants.Success
 }
