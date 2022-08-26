@@ -3,20 +3,16 @@ package middleware
 import (
 	"time"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func CorsMiddleware(c *gin.Context) {
-	cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Content-Type", "Content-Length", "Authorization", "Origin"},
-		ExposeHeaders:    []string{"Content-Type", "Content-Length"},
-		AllowCredentials: true,
-		AllowWebSockets:  true,
-		MaxAge:           12 * time.Hour,
-	})
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+	c.Writer.Header().Set("Access-Control-Max-Age", (12 * time.Hour).String())
+	c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, PATCH, DELETE, UPDATE")
+	c.Writer.Header().Set("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Content-Length, Origin, Authorization, Accept, Client-Security-Token, Accept-Encoding, x-access-token")
+	c.Writer.Header().Set("Access-Control-Expose-Headers", "Content-Length")
+	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	if c.Request.Method == "OPTIONS" {
 		c.AbortWithStatus(204)
