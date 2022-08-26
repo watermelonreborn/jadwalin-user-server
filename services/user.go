@@ -54,9 +54,9 @@ func GetUserByDiscordIDAndServerID(discordID string, serverID string) (models.Us
 	err := db.FindOne(context.TODO(), filter).Decode(&result)
 	if err != nil {
 		log.Printf("%s %s: %s, %s", constants.LogError, err, discordID, serverID)
-		return constants.Error, result
+		return models.User{}, err
 	}
-	return result, err
+	return result, nil
 }
 
 func GetUserByAuthID(authID string) (models.User, error) {
