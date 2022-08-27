@@ -35,5 +35,7 @@ type UserSearch struct {
 type UserSummary struct {
 	DiscordID string `json:"discord_id" binding:"required"`
 	ServerID  string `json:"server_id" binding:"required"`
-	Days      int    `json:"int" binding:"required"`
+	Days      int    `json:"days"`
+	StartHour int    `json:"start_hour"`
+	EndHour   int    `json:"end_hour"`
 }

@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -15,6 +16,7 @@ import (
 func GetCode(c *gin.Context) {
 	if !c.GetBool(constants.IsAuthenticatedKey) {
 		c.JSON(http.StatusUnauthorized, models.Response{
+			Code:  http.StatusUnauthorized,
 			Error: "Unauthorized: Please provide a valid Bearer token in Authorization header",
 		})
 		return
@@ -25,18 +27,22 @@ func GetCode(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.Response{
+			Code:  http.StatusInternalServerError,
 			Error: "Internal server error: Failed to generate new code",
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, models.Response{Data: code})
+	c.JSON(http.StatusOK, models.Response{Code: http.StatusOK, Data: code})
 }
 
 func PostCode(c *gin.Context) {
 	var input models.UserRegister
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, models.Response{Error: err.Error()})
+		c.JSON(http.StatusBadRequest, models.Response{
+			Code:  http.StatusBadRequest,
+			Error: err.Error(),
+		})
 		return
 	}
 
@@ -44,6 +50,7 @@ func PostCode(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, models.Response{
+			Code:  http.StatusNotFound,
 			Error: "Not found: Code has expired or is invalid",
 		})
 		return
@@ -57,7 +64,7 @@ func PostCode(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, models.Response{Data: userId})
+	c.JSON(http.StatusOK, models.Response{Code: http.StatusOK, Data: userId})
 }
 
 func GetUser(c *gin.Context) {
@@ -73,7 +80,10 @@ func DeleteUser(c *gin.Context) {
 func SyncCalendar(c *gin.Context) {
 	var input models.UserSearch
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, models.Response{Error: err.Error()})
+		c.JSON(http.StatusBadRequest, models.Response{
+			Code:  http.StatusBadRequest,
+			Error: err.Error(),
+		})
 		return
 	}
 
@@ -81,6 +91,7 @@ func SyncCalendar(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, models.Response{
+			Code:  http.StatusNotFound,
 			Error: "Not found: User is not registered",
 		})
 		return
@@ -90,6 +101,7 @@ func SyncCalendar(c *gin.Context) {
 
 	if res.StatusCode != 200 || err != nil {
 		c.JSON(http.StatusInternalServerError, models.Response{
+			Code:  http.StatusInternalServerError,
 			Error: "Internal server error: An unexpected error occured",
 		})
 		return
@@ -101,7 +113,10 @@ func SyncCalendar(c *gin.Context) {
 func GetEvents(c *gin.Context) {
 	var input models.UserSearch
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, models.Response{Error: err.Error()})
+		c.JSON(http.StatusBadRequest, models.Response{
+			Code:  http.StatusBadRequest,
+			Error: err.Error(),
+		})
 		return
 	}
 
@@ -109,6 +124,7 @@ func GetEvents(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, models.Response{
+			Code:  http.StatusNotFound,
 			Error: "Not found: User is not registered",
 		})
 		return
@@ -118,6 +134,7 @@ func GetEvents(c *gin.Context) {
 
 	if res.StatusCode != 200 || err != nil {
 		c.JSON(http.StatusInternalServerError, models.Response{
+			Code:  http.StatusInternalServerError,
 			Error: "Internal server error: An unexpected error occured",
 		})
 		return
@@ -126,13 +143,18 @@ func GetEvents(c *gin.Context) {
 	defer res.Body.Close()
 	result := models.Response{}
 	json.NewDecoder(res.Body).Decode(&result)
+	result.Code = http.StatusOK
 	c.JSON(http.StatusOK, result)
 }
 
 func GetSummary(c *gin.Context) {
 	var input models.UserSummary
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, models.Response{Error: err.Error()})
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, models.Response{
+			Code:  http.StatusBadRequest,
+			Error: err.Error(),
+		})
 		return
 	}
 
@@ -140,15 +162,17 @@ func GetSummary(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, models.Response{
+			Code:  http.StatusNotFound,
 			Error: "Not found: User is not registered",
 		})
 		return
 	}
 
-	res, err := services.GetSummary(user.AuthID, input.Days)
+	res, err := services.GetSummary(user.AuthID, input.Days, input.StartHour, input.EndHour)
 
 	if res.StatusCode != 200 || err != nil {
 		c.JSON(http.StatusInternalServerError, models.Response{
+			Code:  http.StatusInternalServerError,
 			Error: "Internal server error: An unexpected error occured",
 		})
 		return
@@ -157,5 +181,6 @@ func GetSummary(c *gin.Context) {
 	defer res.Body.Close()
 	result := models.Response{}
 	json.NewDecoder(res.Body).Decode(&result)
+	result.Code = http.StatusOK
 	c.JSON(http.StatusOK, result)
 }
