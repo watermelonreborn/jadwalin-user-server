@@ -33,11 +33,12 @@ func main() {
 	}
 
 	scheduler := gocron.NewScheduler(time.UTC)
-	scheduler.Every(15).Minutes().Do(func() {
-		log.Println("Scheduler started")
-		services.GetEventsInHour(1)
-		log.Println("Scheduler finished")
+	scheduler.Every(1).Day().At("01:00;13:00").Do(func() {
+		log.Println("[INFO] Scheduler started")
+		services.SendDailyNotification()
+		log.Println("[INFO] Scheduler finished")
 	})
+
 	scheduler.StartAsync()
 
 	if err := s.ListenAndServe(); err != nil {

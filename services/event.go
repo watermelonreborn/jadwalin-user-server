@@ -32,7 +32,6 @@ func GetEvents(authId string) (*http.Response, error) {
 	return httpCall("GET", config.AppConfig.AuthURL+"/user-events/"+authId, nil)
 }
 
-// TODO: Implement
 func GetSummary(authId string, days int, startHour int, endHour int) (*http.Response, error) {
 	body, err := json.Marshal(map[string]interface{}{
 		"user_id":    authId,
@@ -48,30 +47,62 @@ func GetSummary(authId string, days int, startHour int, endHour int) (*http.Resp
 	return httpCall("POST", config.AppConfig.AuthURL+"/user-summary", bytes.NewBuffer(body))
 }
 
-// TODO: Implement
-func SendReminder(reminders []models.ReminderOutput) (*http.Response, error) {
-	return nil, nil
+func SendReminder(reminders []models.ReminderOutput) {
+	body, err := json.Marshal(reminders)
+
+	if err != nil {
+		log.Printf("[ERROR] Error creating notification/reminder json body: %s", err)
+	}
+
+	httpCall("POST", config.AppConfig.BotURL+"/reminder", bytes.NewBuffer(body))
 }
 
-func GetEventsInHour(hour int) {
-	var (
-		result models.UserEventsResult
-	)
+func GetEventsInHour(hour int) []models.ReminderInput {
+	var result models.UserEventsResult
 
 	response, err := httpCall("GET", config.AppConfig.AuthURL+"/events/"+strconv.Itoa(hour), nil)
 	if response.StatusCode != 200 || err != nil {
-		log.Printf("Error getting events in N hour: %v", err)
-		return
+		log.Printf("[ERROR] Failed getting events in N hour: %v", err)
+		return nil
 	}
 
 	defer response.Body.Close()
 
 	err = json.NewDecoder(response.Body).Decode(&result)
 	if err != nil {
-		log.Printf("Error decode to struct: %v", err)
+		log.Printf("[ERROR] Failed decode to struct in get notification events: %v", err)
+		return nil
+	}
+
+	return result.Data
+}
+
+func SendDailyNotification() {
+	input := GetEventsInHour(72)
+
+	if input == nil {
+		log.Printf("[ERROR] Failed to send notification: no events found")
 		return
 	}
 
-	//TODO: process the result
+	var output []models.ReminderOutput
 
+	// TODO: Optimize from linear to constant database calls
+	for _, raw := range input {
+		user, err := GetUserByAuthID(raw.UserID)
+		if err != nil {
+			continue
+		}
+
+		reminder := models.ReminderOutput{
+			DiscordID: user.DiscordID,
+			ServerID:  user.ServerID,
+			Hours:     72,
+			Events:    raw.Events,
+		}
+
+		output = append(output, reminder)
+	}
+
+	SendReminder(output)
 }
