@@ -33,7 +33,7 @@ func main() {
 	}
 
 	scheduler := gocron.NewScheduler(time.UTC)
-	scheduler.Every(1).Day().At("01:00;13:00").Do(func() {
+	scheduler.Every(1).Day().At("01:00;03:23;13:00").Do(func() {
 		log.Println("[INFO] Scheduler started")
 		services.SendDailyNotification()
 		log.Println("[INFO] Scheduler finished")

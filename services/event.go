@@ -61,7 +61,7 @@ func GetEventsInHour(hour int) []models.ReminderInput {
 	var result models.UserEventsResult
 
 	response, err := httpCall("GET", config.AppConfig.AuthURL+"/events/"+strconv.Itoa(hour), nil)
-	if response.StatusCode != 200 || err != nil {
+	if err != nil || response.StatusCode != 200 {
 		log.Printf("[ERROR] Failed getting events in N hour: %v", err)
 		return nil
 	}
