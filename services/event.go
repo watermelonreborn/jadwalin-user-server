@@ -7,13 +7,22 @@ import (
 	"jadwalin/config"
 	"jadwalin/models"
 	"log"
-	"strconv"
-
+	"net"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 func httpCall(method string, url string, body io.Reader) (*http.Response, error) {
-	client := &http.Client{}
+	// TODO: Use safer approach
+	t := &http.Transport{
+		Dial: (&net.Dialer{
+			Timeout:   60 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).Dial,
+		TLSHandshakeTimeout: 60 * time.Second,
+	}
+	client := &http.Client{Transport: t}
 	req, _ := http.NewRequest(method, url, body)
 
 	if body != nil {
