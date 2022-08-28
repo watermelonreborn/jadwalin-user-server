@@ -86,7 +86,7 @@ func GetEventsInHour(hour int) []models.ReminderInput {
 }
 
 func SendDailyNotification() {
-	input := GetEventsInHour(72)
+	input := GetEventsInHour(24)
 
 	if input == nil {
 		log.Printf("[ERROR] Failed to send notification: no events found")
@@ -105,7 +105,7 @@ func SendDailyNotification() {
 		reminder := models.ReminderOutput{
 			DiscordID: user.DiscordID,
 			ServerID:  user.ServerID,
-			Hours:     72,
+			Hours:     24,
 			Events:    raw.Events,
 		}
 
