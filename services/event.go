@@ -19,7 +19,7 @@ func httpCall(method string, url string, body io.Reader) (*http.Response, error)
 			Timeout:   60 * time.Second,
 			KeepAlive: 30 * time.Second,
 		}).Dial,
-		TLSHandshakeTimeout: 10 * time.Second,
+		TLSHandshakeTimeout: 60 * time.Second,
 	}
 	client := &http.Client{Transport: t}
 	req, _ := http.NewRequest(method, url, body)
