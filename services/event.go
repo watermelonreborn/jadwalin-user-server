@@ -23,6 +23,7 @@ func httpCall(method string, url string, body io.Reader) (*http.Response, error)
 	}
 	client := &http.Client{Transport: t}
 	req, _ := http.NewRequest(method, url, body)
+	req.Close = true
 
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
